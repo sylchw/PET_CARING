@@ -1,8 +1,16 @@
 CREATE OR REPLACE FUNCTION bid_check()
 RETURNS TRIGGER AS $$
 DECLARE checkValue NUMERIC;
+DECLARE checkStartTime TIMESTAMP;
+DECLARE checkEndTime TIMESTAMP;
 BEGIN
 	SELECT expected INTO checkValue
+	FROM services s
+	WHERE s.sid = NEW.sid;
+	SELECT startTime INTO checkStartTime
+	FROM services s
+	WHERE s.sid = NEW.sid;
+	SELECT endTime INTO checkEndTime
 	FROM services s
 	WHERE s.sid = NEW.sid;
 	-- Check if pet type matches service pet type
@@ -19,11 +27,11 @@ BEGIN
 		RETURN NULL;
 	-- Check if pet is already in another accepted service 
 	ELSIF EXISTS(SELECT 1
-				 FROM bid b inner join services s on b.sid = s.sid
+				 FROM bids b inner join services s on b.sid = s.sid
 				 WHERE b.id = NEW.id
 				 AND b.petName = NEW.petName
-				 AND s.startTime <= NEW.endTime
-				 AND NEW.startTime <= s.endTime
+				 AND s.startTime <= checkEndTime
+				 AND checkStartTime <= s.endTime
 				 AND b.accepted = true) THEN
 		RAISE NOTICE 'Pet is in another accepted service!';
 		RETURN NULL;
@@ -47,4 +55,3 @@ BEFORE INSERT OR UPDATE
 ON bids
 FOR EACH ROW
 EXECUTE PROCEDURE bid_check();
-

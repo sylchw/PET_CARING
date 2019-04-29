@@ -2,6 +2,7 @@ const express = require("express");
 const passport = require("passport");
 const router = express.Router();
 
+const adminSubRouter = require("./admin");
 const bidSubRouter = require("./bids");
 const petTypeSubRouter = require("./pettypes");
 const petSubRouter = require("./pets");
@@ -9,6 +10,7 @@ const petBreedSubRouter = require("./petbreeds");
 const serviceSubRouter = require("./services");
 const userSubRouter = require("./users");
 const insertDataSubRouter = require("./insertdata");
+const ratingSubRouter = require("./ratings");
 
 /**
  * @route POST /api/me
@@ -28,6 +30,13 @@ router.post(
     });
   }
 );
+
+/**
+ * @route * /api/admin/*
+ * @desc: API related to admin endpoint such as /api/admin
+ * @access Admin
+ */
+router.use("/admin", adminSubRouter);
 
 /**
  * @route * /api/bids/*
@@ -72,6 +81,14 @@ router.use("/services", serviceSubRouter);
  * @access Public
  */
 router.use("/user", userSubRouter);
+
+/**
+ * @route * /api/ratings/*
+ * @desc: API related to ratings endpoint such as /api/ratings
+ * @access Variable
+ */
+router.use("/ratings", ratingSubRouter);
+
 
 router.use("/insertdata", insertDataSubRouter);
 

@@ -96,8 +96,9 @@ class BrowseContainer extends Component {
   };
   
   _handlePageChange = (page) => {
+    console.log('page', page)
     this.setState({pageNum: page}, () => {
-      this.formQueryString();
+      this._formQueryString();
     });
   };
 
@@ -114,6 +115,7 @@ class BrowseContainer extends Component {
       searchInput
     } = this.state;
     const { services } = this.props;
+    // console.log(services.pages)
     return (
       <GridContainer spacing={16}>
         <GridItem lg={3} md={3} xs={12}>
@@ -130,18 +132,20 @@ class BrowseContainer extends Component {
         </GridItem>
         <GridItem lg={9} md={9} xs={12}>
           {
-            (!services.loading) ?
-            <ServiceList serviceListings={services.filteredServices} />
+            (!services.loading) ? (
+              <>
+                <ServiceList serviceListings={services.filteredServices} />
+                <PaginatorCenter
+                  limit={limit}
+                  total={services.pageNum * limit}
+                  currentPage={this.state.pageNum}
+                  pageCount={5}
+                  handlePageChange={this._handlePageChange}
+                />
+            </>)
             :
             <Loader />
           }
-          <PaginatorCenter
-            limit={limit}
-            total={services.pages || this.state.total}
-            currentPage={this.state.pageNum}
-            handlePageChange={this._handlePageChange}
-            style="default"
-          />
         </GridItem>
       </GridContainer>
     );
